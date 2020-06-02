@@ -90,7 +90,6 @@ function findUnderlyingComponentDefinition(exportPath, importer) {
     // to call it in a bunch of places on a per-type basis.
     path = resolveToValue(path, importer);
     const node = path.node;
-    console.log('*** digging', node.type, node);
 
     // Rather than using ast-types 'namedTypes' (t) checks, we 'switch' on the
     // `node.type` value.  We lose the "is a" aspect (like a CallExpression "is
@@ -147,7 +146,6 @@ function findImperativeHandleMethods(exportPath, importer) {
   const results: NodePath[] = [];
   visit(path, {
     visitCallExpression: function(callPath) {
-      // console.log('* call expression...');
       // We're trying to handle calls to React's useImperativeHandle.  If this
       // isn't, we can stop visiting this node path immediately.
       if (!isReactBuiltinCall(callPath, 'useImperativeHandle', importer)) {

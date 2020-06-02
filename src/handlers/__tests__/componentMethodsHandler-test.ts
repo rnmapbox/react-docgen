@@ -423,7 +423,6 @@ describe('componentMethodsHandler', () => {
         // documentation = new (require('../../Documentation'))();
 
         const definition = parsed.get('body', index);
-        // console.log(`def ${index}`, definition);
         if (!definition.value) {
           return;
         }
