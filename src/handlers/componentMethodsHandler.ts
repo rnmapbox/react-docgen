@@ -74,8 +74,11 @@ function findAssignedMethods(
 // Conversely, finding any 'useImperativeHandle()' methods requires digging
 // through intervening assignments, declarations, and optionally a
 // React.forwardRef() call.
-function findUnderlyingComponentDefinition(exportPath, importer) {
-  let path = exportPath;
+function findUnderlyingComponentDefinition(
+  exportPath: NodePath,
+  importer: Importer,
+) {
+  let path: NodePath | null = exportPath;
   let keepDigging = true;
   let sawForwardRef = false;
 
@@ -85,11 +88,12 @@ function findUnderlyingComponentDefinition(exportPath, importer) {
   // component definition, *then* we can 'visit' downwards to find the call to
   // useImperativeHandle, if it exists.
   while (keepDigging && path) {
+    let actPath: NodePath = path;
     // Using resolveToValue automatically gets the "value" from things like
     // assignments or identifier references.  Putting this here removes the need
     // to call it in a bunch of places on a per-type basis.
-    path = resolveToValue(path, importer);
-    const node = path.node;
+    actPath = resolveToValue(actPath, importer);
+    const node = actPath.node;
 
     // Rather than using ast-types 'namedTypes' (t) checks, we 'switch' on the
     // `node.type` value.  We lose the "is a" aspect (like a CallExpression "is
@@ -97,23 +101,23 @@ function findUnderlyingComponentDefinition(exportPath, importer) {
     // type, so that's an acceptable compromise.
     switch (node.type) {
       case 'VariableDeclaration':
-        path = path.get('declarations');
-        if (path.value && path.value.length === 1) {
-          path = path.get(0);
+        actPath = actPath.get('declarations');
+        if (actPath.value && actPath.value.length === 1) {
+          path = actPath.get(0);
         } else {
           path = null;
         }
         break;
 
       case 'ExpressionStatement':
-        path = path.get('expression');
+        path = actPath.get('expression');
         break;
 
       case 'CallExpression':
         // FUTURE: Can we detect other common HOCs that we could drill through?
-        if (isReactForwardRefCall(path, importer) && !sawForwardRef) {
+        if (isReactForwardRefCall(actPath, importer) && !sawForwardRef) {
           sawForwardRef = true;
-          path = path.get('arguments', 0);
+          path = actPath.get('arguments', 0);
         } else {
           path = null;
         }
@@ -123,7 +127,7 @@ function findUnderlyingComponentDefinition(exportPath, importer) {
       case 'FunctionDeclaration':
       case 'FunctionExpression':
         // get the body and visit for useImperativeHandle!
-        path = path.get('body');
+        path = actPath.get('body');
         keepDigging = false;
         break;
 
@@ -136,7 +140,7 @@ function findUnderlyingComponentDefinition(exportPath, importer) {
   return path;
 }
 
-function findImperativeHandleMethods(exportPath, importer) {
+function findImperativeHandleMethods(exportPath: NodePath, importer: Importer) {
   const path = findUnderlyingComponentDefinition(exportPath, importer);
 
   if (!path) {
@@ -144,8 +148,9 @@ function findImperativeHandleMethods(exportPath, importer) {
   }
 
   const results: NodePath[] = [];
+  // @ts-ignore
   visit(path, {
-    visitCallExpression: function(callPath) {
+    visitCallExpression: function (callPath) {
       // We're trying to handle calls to React's useImperativeHandle.  If this
       // isn't, we can stop visiting this node path immediately.
       if (!isReactBuiltinCall(callPath, 'useImperativeHandle', importer)) {
