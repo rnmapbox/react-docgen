@@ -5,10 +5,27 @@ import isReactForwardRefCall from '../utils/isReactForwardRefCall';
 import resolveToValue from '../utils/resolveToValue';
 import type { Importer } from '../parse';
 import type { NodePath } from 'ast-types/lib/node-path';
+import isReactBuiltinCall from '../utils/isReactBuiltinCall';
 
 function isClassDefinition(nodePath: NodePath): boolean {
   const node = nodePath.node;
   return t.ClassDeclaration.check(node) || t.ClassExpression.check(node);
+}
+
+function resolveReactHOCs(path: NodePath, importer: Importer) {
+  let actPath = path;
+  let changed = false;
+  do {
+    changed = false;
+    if (isReactForwardRefCall(path, importer)) {
+      actPath = path.get('arguments', 0);
+      changed = true;
+    } else if (isReactBuiltinCall(path, 'memo', importer)) {
+      actPath = path.get('arguments', 0);
+      changed = true;
+    }
+  } while (changed);
+  return actPath;
 }
 
 function getDocblockFromComponent(
@@ -45,10 +62,7 @@ function getDocblockFromComponent(
     }
   }
   if (!description) {
-    const searchPath = isReactForwardRefCall(path, importer)
-      ? path.get('arguments', 0)
-      : path;
-    const inner = resolveToValue(searchPath, importer);
+    const inner = resolveToValue(resolveReactHOCs(path, importer), importer);
     if (inner.node !== path.node) {
       return getDocblockFromComponent(inner, importer);
     }
