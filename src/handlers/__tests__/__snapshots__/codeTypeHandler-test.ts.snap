@@ -1,0 +1,131 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`codeTypeHandler TypeAlias class definition for flow <0.53 ignores hash map entry 1`] = `
+{
+  "bar": {
+    "description": "",
+    "flowType": {},
+    "required": false,
+  },
+}
+`;
+
+exports[`codeTypeHandler TypeAlias class definition for flow >=0.53 with State ignores hash map entry 1`] = `
+{
+  "bar": {
+    "description": "",
+    "flowType": {},
+    "required": false,
+  },
+}
+`;
+
+exports[`codeTypeHandler TypeAlias class definition for flow >=0.53 without State ignores hash map entry 1`] = `
+{
+  "bar": {
+    "description": "",
+    "flowType": {},
+    "required": false,
+  },
+}
+`;
+
+exports[`codeTypeHandler TypeAlias class definition with inline props ignores hash map entry 1`] = `
+{
+  "bar": {
+    "description": "",
+    "flowType": {},
+    "required": false,
+  },
+}
+`;
+
+exports[`codeTypeHandler TypeAlias stateless component ignores hash map entry 1`] = `
+{
+  "bar": {
+    "description": "",
+    "flowType": {},
+    "required": false,
+  },
+}
+`;
+
+exports[`codeTypeHandler does support utility types inline 1`] = `
+{
+  "foo": {
+    "description": "",
+    "flowType": {},
+    "required": true,
+  },
+}
+`;
+
+exports[`codeTypeHandler imported prop types imported 1`] = `
+{
+  "abc": {
+    "description": "",
+    "flowType": {},
+    "required": true,
+  },
+  "bar": {
+    "description": "",
+    "flowType": {},
+    "required": false,
+  },
+  "def": {
+    "description": "",
+    "flowType": {},
+    "required": true,
+  },
+  "foo": {
+    "description": "",
+    "flowType": {},
+    "required": true,
+  },
+  "foobar": {
+    "description": "",
+    "flowType": {},
+    "required": true,
+  },
+  "hal": {
+    "description": "",
+    "flowType": {},
+    "required": true,
+  },
+}
+`;
+
+exports[`codeTypeHandler imported prop types type imported 1`] = `
+{
+  "abc": {
+    "description": "",
+    "flowType": {},
+    "required": true,
+  },
+  "bar": {
+    "description": "",
+    "flowType": {},
+    "required": false,
+  },
+  "def": {
+    "description": "",
+    "flowType": {},
+    "required": true,
+  },
+  "foo": {
+    "description": "",
+    "flowType": {},
+    "required": true,
+  },
+  "foobar": {
+    "description": "",
+    "flowType": {},
+    "required": true,
+  },
+  "hal": {
+    "description": "",
+    "flowType": {},
+    "required": true,
+  },
+}
+`;
