@@ -1,3 +1,20 @@
+# rnmapbox fork of react-docgen
+
+* useImperativeHandle support (https://github.com/reactjs/react-docgen/pull/591)
+* document typescript shapes (https://github.com/reactjs/react-docgen/pull/663)
+* get prop types in case component inherits from a HOC (TODO)
+
+```sh
+yarn build
+cp -rf ./packages/react-docgen/ ../react-docgen-dist/
+cd ../react-docgen-dist
+git add *
+git commit -m "build $(git -C ../react-docgen rev-parse HEAD)"
+git remote add rnmapbox https://github.com/rnmapbox/react-docgen
+git branch -m rnmapbox-dist
+git push rnmapbox rnmapbox-dist --force
+```
+
 # react-docgen
 
 `react-docgen` is a CLI and toolbox to help extracting information from [React][] components, and generate documentation from it.
