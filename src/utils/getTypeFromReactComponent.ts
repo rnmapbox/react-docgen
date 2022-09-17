@@ -54,14 +54,18 @@ function propTypeFromInheritedHoc(
   const parent = path.get('superClass.arguments')[0];
 
   if (parent.hasNode()) {
-    const typeParam = parent.get('typeParameters.params.0');
+    const typeParams = parent.get('typeParameters');
 
-    if (
-      !Array.isArray(typeParam) &&
-      typeParam.hasNode() &&
-      typeParam.isTSTypeReference()
-    ) {
-      return typeParam;
+    if (typeParams.hasNode()) {
+      const typeParam = typeParams.get('params.0');
+
+      if (
+        !Array.isArray(typeParam) &&
+        typeParam.hasNode() &&
+        typeParam.isTSTypeReference()
+      ) {
+        return typeParam;
+      }
     }
   }
 
