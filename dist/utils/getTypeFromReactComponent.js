@@ -21,6 +21,26 @@ function getStatelessPropsPath(componentDefinition) {
     }
     return value.get('params')[0];
 }
+function isInheritedFromHoc(path) {
+    const superClass = path.get('superClass');
+    if (superClass.isCallExpression()) {
+        return true;
+    }
+    else
+        return false;
+}
+function propTypeFromInheritedHoc(path) {
+    const parent = path.get('superClass.arguments')[0];
+    if (parent.hasNode()) {
+        const typeParam = parent.get('typeParameters.params.0');
+        if (!Array.isArray(typeParam) &&
+            typeParam.hasNode() &&
+            typeParam.isTSTypeReference()) {
+            return typeParam;
+        }
+    }
+    return null;
+}
 /**
  * Given an React component (stateless or class) tries to find the
  * flow type for the props. If not found or not one of the supported
@@ -35,6 +55,12 @@ exports.default = (path) => {
             typePath = params[params.length === 3 ? 1 : 0];
         }
         else {
+            if (isInheritedFromHoc(path)) {
+                typePath = propTypeFromInheritedHoc(path);
+                if (typePath) {
+                    return typePath;
+                }
+            }
             const propsMemberPath = (0, getMemberValuePath_1.default)(path, 'props');
             if (!propsMemberPath) {
                 return null;
