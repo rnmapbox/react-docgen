@@ -23,6 +23,16 @@ import {
   findFunctionReturn,
 } from '../utils/index.js';
 
+function resolveUseCallback(path: NodePath): NodePath {
+  if (path.isCallExpression()) {
+    if (isReactBuiltinCall(path, 'useCallback')) {
+      return resolveToValue(path.get('arguments')[0] as NodePath);
+    }
+  }
+
+  return path;
+}
+
 /**
  * The following values/constructs are considered methods:
  *
@@ -40,7 +50,9 @@ function isMethod(path: NodePath): path is MethodNodePath {
     !isProbablyMethod &&
     (path.isClassProperty() || path.isObjectProperty())
   ) {
-    const value = resolveToValue(path.get('value') as NodePath);
+    const value = resolveUseCallback(
+      resolveToValue(path.get('value') as NodePath),
+    );
 
     isProbablyMethod = value.isFunction();
   }
