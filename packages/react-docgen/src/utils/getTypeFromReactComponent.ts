@@ -20,9 +20,55 @@ import type {
   TypeParameterDeclaration,
   TypeParameterInstantiation,
   VariableDeclarator,
+  ClassDeclaration,
+  ClassExpression,
 } from '@babel/types';
 import getTypeIdentifier from './getTypeIdentifier.js';
 import isReactBuiltinReference from './isReactBuiltinReference.js';
+
+function isInheritedFromHoc(
+  path: NodePath<ClassDeclaration | ClassExpression>,
+): boolean {
+  const superClass = path.get('superClass');
+
+  if (superClass.isCallExpression()) {
+    return true;
+  } else return false;
+}
+
+function propTypeFromInheritedHoc(
+  path: NodePath<ClassDeclaration | ClassExpression>,
+): NodePath | null {
+  const superClass = path.get('superClass');
+
+  if (!superClass.isCallExpression()) return null;
+
+  const arugments: NodePath[] = superClass.get('arguments');
+  const parent = arugments[0];
+
+  if (parent && !Array.isArray(parent) && parent.hasNode()) {
+    const typeParams = parent.get('typeParameters');
+
+    if (!Array.isArray(typeParams) && typeParams.hasNode()) {
+      const params = typeParams.get('params');
+
+      if (!Array.isArray(params)) return null;
+
+      const typeParam = params[0];
+
+      if (
+        typeParam &&
+        !Array.isArray(typeParam) &&
+        typeParam.hasNode() &&
+        typeParam.isTSTypeReference()
+      ) {
+        return typeParam;
+      }
+    }
+  }
+
+  return null;
+}
 
 // TODO TESTME
 
@@ -94,6 +140,15 @@ export default (componentDefinition: NodePath): NodePath[] => {
         typePaths.push(params[params.length === 3 ? 1 : 0]!);
       }
     } else {
+      if (isInheritedFromHoc(componentDefinition)) {
+        const typePath = propTypeFromInheritedHoc(componentDefinition);
+
+        if (typePath) {
+          typePaths.push(typePath);
+        }
+
+        return typePaths;
+      }
       const propsMemberPath = getMemberValuePath(componentDefinition, 'props');
 
       if (!propsMemberPath) {

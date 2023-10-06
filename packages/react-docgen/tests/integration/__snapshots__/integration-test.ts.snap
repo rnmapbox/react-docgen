@@ -2146,6 +2146,25 @@ exports[`integration > fixtures > processes component "test-all-imports.tsx" wit
 ]
 `;
 
+exports[`integration > fixtures > processes component "ts-extends-hoc.tsx" without errors 1`] = `
+[
+  {
+    "description": "",
+    "displayName": "MyComponent",
+    "methods": [],
+    "props": {
+      "value": {
+        "description": "description of value",
+        "required": true,
+        "tsType": {
+          "name": "string",
+        },
+      },
+    },
+  },
+]
+`;
+
 exports[`integration > fixtures > processes component "useCallback-useImperativeHandle.tsx" without errors 1`] = `
 [
   {
