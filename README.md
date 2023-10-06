@@ -1,3 +1,8 @@
+# @rnmapbox/maps related chanages:
+
+1.) Extend from HOC (71df6b72aaa42cd32c0e5ee65216516b509dcf29)
+2.) Fix methods with useCallback and useImperativeHandle (8cd1af2fff4f65208c6fba2fcbbd030bfcb269a1)
+
 # react-docgen
 
 [`react-docgen`](./packages/react-docgen/) is a highly customizable library that
