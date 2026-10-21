@@ -1,0 +1,50 @@
+import type { NodePath } from '@babel/traverse';
+import isUnreachableFlowType from '../utils/isUnreachableFlowType.js';
+import resolveToValue from '../utils/resolveToValue.js';
+import { unwrapUtilityType } from './flowUtilityTypes.js';
+import getTypeIdentifier from './getTypeIdentifier.js';
+
+function tryResolveGenericTypeAnnotation(
+  path: NodePath,
+  seen = new WeakSet<object>(),
+): NodePath | undefined {
+  let typePath = unwrapUtilityType(path);
+  const idPath = getTypeIdentifier(typePath);
+
+  if (idPath) {
+    typePath = resolveToValue(idPath);
+    if (isUnreachableFlowType(typePath) || seen.has(typePath.node)) {
+      return;
+    }
+
+    seen.add(typePath.node);
+
+    if (typePath.isTypeAlias()) {
+      return tryResolveGenericTypeAnnotation(typePath.get('right'), seen);
+    } else if (typePath.isTSTypeAliasDeclaration()) {
+      return tryResolveGenericTypeAnnotation(
+        typePath.get('typeAnnotation'),
+        seen,
+      );
+    }
+
+    return typePath;
+  }
+
+  return typePath;
+}
+
+/**
+ * Given an React component (stateless or class) tries to find the
+ * flow or ts type for the props. If not found or not one of the supported
+ * component types returns undefined.
+ */
+export default function resolveGenericTypeAnnotation(
+  path: NodePath,
+): NodePath | undefined {
+  const typePath = tryResolveGenericTypeAnnotation(path);
+
+  if (!typePath || typePath === path) return;
+
+  return typePath;
+}
